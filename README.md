@@ -10,13 +10,41 @@
 
 ---
 
-## 🚀 Tecnologías utilizadas
+## 🚀 Tecnologías utilizadas en las Plantillas
 
-- [n8n](https://n8n.io/)
-- API de Google (Gmail, Calendar, etc.)
-- [Groq API](https://console.groq.com/)
-- [HuggingFace API](https://huggingface.co/)
-- Otras integraciones personalizadas
+**FenrirAI** aprovecha las capacidades de n8n para integrarse con una amplia variedad de herramientas y servicios, facilitando la automatización de tareas en entornos educativos. Algunas de las integraciones más destacadas incluyen:
+
+### 📊 Productividad y Gestión de Datos
+
+- **Google Sheets**: Automatiza la lectura y escritura de datos en hojas de cálculo.
+- **Notion**: Gestiona bases de datos y páginas de contenido.
+- **Airtable**: Sincroniza y organiza información en bases de datos relacionales.
+- **Google Drive**: Gestiona archivos y carpetas en la nube.
+
+### 💬 Comunicación y Notificaciones
+
+- **Gmail**: Envía y recibe correos electrónicos automáticamente.
+- **Slack**: Envía mensajes y notificaciones a canales o usuarios específicos.
+- **Telegram**: Interactúa con bots y envía mensajes a chats.
+- **Discord**: Gestiona mensajes y eventos en servidores.
+
+### 🤖 Inteligencia Artificial y Automatización
+
+- **HuggingFace API**: Integra modelos de lenguaje y visión para tareas de IA.
+- **Groq API**: Utiliza modelos de IA para procesamiento de lenguaje natural.
+- **LangChain**: Construye agentes autónomos y flujos de trabajo inteligentes.
+
+### 🧰 Herramientas para Desarrolladores y APIs
+
+- **HTTP Request**: Realiza llamadas a APIs RESTful personalizadas.
+- **Webhooks**: Recibe y envía datos en tiempo real entre servicios.
+- **MySQL / PostgreSQL**: Conecta y manipula bases de datos relacionales.
+
+### 📈 Marketing y CRM
+
+- **HubSpot**: Automatiza la gestión de contactos y campañas de marketing.
+- **Salesforce**: Sincroniza datos de clientes y oportunidades de venta.
+- **Mailchimp**: Gestiona listas de correo y envíos masivos.
 
 ---
 
