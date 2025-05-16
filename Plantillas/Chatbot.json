@@ -1,0 +1,204 @@
+{
+  "name": "Chatbot",
+  "nodes": [
+    {
+      "parameters": {
+        "updates": [
+          "messages"
+        ],
+        "options": {}
+      },
+      "type": "n8n-nodes-base.whatsAppTrigger",
+      "typeVersion": 1,
+      "position": [
+        -140,
+        0
+      ],
+      "id": "8598be18-5941-414e-a8da-582944fd36a1",
+      "name": "WhatsApp Trigger",
+      "webhookId": "62022334-1bdd-4a49-bc0c-2b70f6d4a7f1",
+      "credentials": {
+        "whatsAppTriggerApi": {
+          "id": "vGO2WDq0V78E3LVE",
+          "name": "WhatsApp OAuth account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.messages[0].text.body }}",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.8,
+      "position": [
+        440,
+        0
+      ],
+      "id": "aa01eecc-a064-4954-94c5-23911c758cd6",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "={{ $('WhatsApp Trigger').item.json.messages[0].from }}",
+        "contextWindowLength": 0
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        520,
+        240
+      ],
+      "id": "034a4eaf-c5f0-40e0-9b2c-798f7f8bc83b",
+      "name": "Simple Memory"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "f827e1e5-f95c-4c55-9228-5206f1927fd8",
+              "leftValue": "={{ $json.messages[0].text.body }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "exists",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.filter",
+      "typeVersion": 2.2,
+      "position": [
+        120,
+        0
+      ],
+      "id": "fd5af171-e1b8-43cd-9f50-55382df8f40c",
+      "name": "Filter"
+    },
+    {
+      "parameters": {
+        "operation": "send",
+        "phoneNumberId": "569930079534491",
+        "recipientPhoneNumber": "={{ $('Filter').item.json.messages[0].from }}",
+        "textBody": "={{ $json.output }}",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.whatsApp",
+      "typeVersion": 1,
+      "position": [
+        800,
+        0
+      ],
+      "id": "165b8e5b-75b3-4a46-a387-5ec261ffe168",
+      "name": "WhatsApp Business Cloud",
+      "webhookId": "97061518-6535-414e-b6bc-54595454dc35",
+      "credentials": {
+        "whatsAppApi": {
+          "id": "KQmBgGg3lBMxRndK",
+          "name": "WhatsApp account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGroq",
+      "typeVersion": 1,
+      "position": [
+        360,
+        240
+      ],
+      "id": "bba9d98c-d91a-4eeb-b990-26d62030fc65",
+      "name": "Groq Chat Model",
+      "credentials": {
+        "groqApi": {
+          "id": "xWA7XWt0rmLzxjHi",
+          "name": "Groq account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "WhatsApp Trigger": {
+      "main": [
+        [
+          {
+            "node": "Filter",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "WhatsApp Business Cloud",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filter": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Groq Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "0c7ecb34-cbf9-4e2b-8a84-146fe64c10bf",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "d0adb46a3935c41b8c019685ede58fcc4e6728212575a3c7063fbadfaaa2015c"
+  },
+  "id": "ghSgJX0rPoQBvONL",
+  "tags": []
+}

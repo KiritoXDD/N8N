@@ -1,0 +1,215 @@
+{
+  "name": "AI Imagen",
+  "nodes": [
+    {
+      "parameters": {
+        "respondWith": "text",
+        "responseBody": "=<!DOCTYPE html>\n<html lang=\"en\">\n<head>\n    <meta charset=\"UTF-8\">\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n    <title>Tu imagen generada</title>\n    <style>\n        body {\n            font-family: 'Open Sans', Tahoma, Geneva, Verdana, sans-serif;\n            display: flex;\n            flex-direction: column;\n            align-items: center;\n            justify-content: center;\n            min-height: 100vh;\n            background-color: #121212;\n            color: #e0e0e0;\n        }\n        .container {\n            margin-top: 2em;\n            width: 90%;\n            max-width: 670px; /* Increased the max-width for the main image area */\n            text-align: center;\n            background: #1e1e1e;\n            padding: 24px;\n            border-radius: 12px;\n            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);\n            margin-bottom: 24px;\n        }\n        .image-container {\n            margin-bottom: 20px;\n        }\n        .image-container img {\n            max-width: 100%;\n            height: auto;\n            border-radius: 12px;\n            border: 2px solid #333;\n        }\n        .style-text {\n            font-size: 18px;\n            margin-bottom: 20px;\n            color: #bbb;\n        }\n        .cta {\n            display: block;\n            width: 100%;\n            margin: 20px 0 0;\n            padding: 18px 0;\n            border: none;\n            border-radius: 6px;\n            text-decoration: none;\n            color: #fff;\n            background-color: #1C9985;\n            font-size: 18px;\n            font-weight: 400;\n            cursor: pointer;\n            transition: all 0.3s ease;\n        }\n        .cta:hover {\n            background-color: #20B69E;\n            transform: translateY(-2px);\n            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);\n        }\n        /* New section for recent renders */\n        .recent-renders {\n            display: flex;\n            justify-content: space-between;\n            flex-wrap: wrap;\n            gap: 16px;\n            margin-top: 24px;\n            max-width: 670px;\n        }\n        .recent-render img {\n            width: 100%;\n            max-width: 180px;\n            height: auto;\n            border-radius: 8px;\n            border: 2px solid #333;\n        }\n        .recent-render {\n            flex: 1;\n            max-width: 200px;\n            background-color: #2c2c2c;\n            padding: 10px;\n            border-radius: 10px;\n            margin-bottom: 3 rem;\n        }\n    </style>\n</head>\n<body>\n    <div class=\"container\">\n        <div class=\"image-container\">\n            <img src=\"{{ $json.url }}\" alt=\"Imagen Generada\" />\n        </div>\n      </div>\n    </div>\n</body>\n</html>\n",
+        "options": {}
+      },
+      "id": "acbc67f1-e809-45bf-bc90-7707cee5c5b4",
+      "name": "Serve webpage",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "position": [
+        1020,
+        740
+      ],
+      "typeVersion": 1.1
+    },
+    {
+      "parameters": {
+        "path": "imagegen",
+        "formTitle": "Generador de Imagenes IA",
+        "formDescription": "Usando API de de Gradio",
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "Prompt",
+              "fieldType": "textarea",
+              "placeholder": "Un astronauta montando a caballo en estilo 35 mm.",
+              "requiredField": true
+            }
+          ]
+        },
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "8f777727-c05b-4aaf-b231-92b81b7a2893",
+      "name": "n8n Form Trigger",
+      "type": "n8n-nodes-base.formTrigger",
+      "position": [
+        -80,
+        860
+      ],
+      "webhookId": "a35eb005-f795-4c85-9d00-0fe9797cb509",
+      "typeVersion": 2.1
+    },
+    {
+      "parameters": {
+        "url": "=https://black-forest-labs-flux-1-schnell.hf.space/call/infer/{{ $json.event_id }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        520,
+        740
+      ],
+      "id": "e314eb6b-64e4-425f-ba3f-0bfc8455796a",
+      "name": "HTTP Request1"
+    },
+    {
+      "parameters": {
+        "jsCode": "const raw = $json[\"data\"];\n\n// Extrae solo la parte de datos luego de `data: `\nconst jsonString = raw.split(\"data: \")[1].trim();\n\n// Parsea el array JSON\nconst parsed = JSON.parse(jsonString);\n\n// El primer elemento del array es el objeto que contiene la URL\nconst fileObject = parsed[0];\n\nreturn [\n  {\n    json: {\n      url: fileObject.url\n    }\n  }\n];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        740,
+        740
+      ],
+      "id": "b57fec26-9c85-4307-ac44-a537f8e7341f",
+      "name": "Code"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://black-forest-labs-flux-1-schnell.hf.space/call/infer",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"data\": [\n    \"{{ $json.Prompt }}\", \n    0,\n    true,\n    1920,\n    1080,\n    1\n  ]\n}",
+        "options": {}
+      },
+      "id": "8806ecd9-eece-4a90-8a17-821485ed8832",
+      "name": "HTTP Request",
+      "type": "n8n-nodes-base.httpRequest",
+      "position": [
+        240,
+        860
+      ],
+      "notesInFlow": true,
+      "typeVersion": 4.2,
+      "onError": "continueErrorOutput",
+      "notes": " "
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "{\n  \"formSubmittedText\": \"Error con la API\"\n}",
+        "options": {}
+      },
+      "id": "252d19c0-f545-46b2-ac27-eface1656531",
+      "name": "Respond to Webhook",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "position": [
+        520,
+        940
+      ],
+      "typeVersion": 1.1
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://black-forest-labs-flux-1-schnell.hf.space/call/infer",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"data\": [\n    \"{{ $json.Prompt }}\", \n    0,\n    true,\n    1920,\n    1080,\n    1\n  ]\n}",
+        "options": {}
+      },
+      "id": "bd8a9fa2-2d6e-48f2-990c-58c11fcad2f0",
+      "name": "HTTP Request2",
+      "type": "n8n-nodes-base.httpRequest",
+      "position": [
+        280,
+        1080
+      ],
+      "notesInFlow": true,
+      "typeVersion": 4.2,
+      "onError": "continueErrorOutput",
+      "notes": " "
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "n8n Form Trigger": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request1": {
+      "main": [
+        [
+          {
+            "node": "Code",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code": {
+      "main": [
+        [
+          {
+            "node": "Serve webpage",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "a3183206-4252-4409-9c52-0b6dc86b89fd",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "d0adb46a3935c41b8c019685ede58fcc4e6728212575a3c7063fbadfaaa2015c"
+  },
+  "id": "xTSzSEb0zsjctMbz",
+  "tags": []
+}
